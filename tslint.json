@@ -1,0 +1,36 @@
+{
+  "extends": ["tslint:latest"],
+  "rules": {
+    "member-access": false,
+    "no-submodule-imports": false,
+    "interface-name": false,
+    "no-implicit-dependencies": false,
+    "object-literal-sort-keys": false,
+    "variable-name": false,
+    "no-object-literal-type-assertion": false,
+    "jsx-boolean-value": [true, "never"],
+    "jsx-no-lambda": false,
+    "no-console": [true, "log"],
+    "interface-over-type-literal": false,
+    "ordered-imports": false,
+    "quotemark": [true, "single"],
+    "member-ordering": [
+      true,
+      {
+        "order": [
+          "public-constructor",
+          "private-constructor",
+          "private-instance-method",
+          "private-static-field",
+          "private-instance-field",
+          "protected-instance-method",
+          "public-static-field",
+          "public-instance-field",
+          "public-instance-method"
+        ]
+      }
+    ],
+    "arrow-parens": false,
+    "max-classes-per-file": false
+  }
+}
