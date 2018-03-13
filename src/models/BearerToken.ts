@@ -5,6 +5,7 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 export type BearerTokenModel = mongoose.Document & {
   _id: string;
   userId: typeof ObjectId;
+  id: number;
 };
 
 export default new mongoose.Schema({

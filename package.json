@@ -11,7 +11,7 @@
   },
   "betterScripts": {
     "dev": {
-      "command": "nodemon --exec ts-node src/app | bunyan -o short -l trace",
+      "command": "nodemon | bunyan -o short -l trace",
       "env": {
         "NODE_ENV": "development"
       }
@@ -32,7 +32,6 @@
     "@types/express": "^4.11.1",
     "@types/express-domain-middleware": "0.0.6",
     "@types/http-errors": "^1.6.1",
-    "@types/joi": "^13.0.5",
     "@types/mongoose": "^5.0.1",
     "@types/mz": "0.0.32",
     "@types/nodemailer": "^4.3.3",
@@ -59,7 +58,7 @@
     "ramda": "^0.25.0",
     "ts-node": "^4.1.0",
     "ts-service": "0.0.10",
-    "typescript": "^2.7.1"
+    "typescript": "2.8.0-dev.20180308"
   },
   "devDependencies": {
     "nodemon": "^1.14.12",

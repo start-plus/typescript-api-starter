@@ -6,6 +6,7 @@ import * as fs from 'mz/fs';
 import * as ejs from 'ejs';
 import * as nodemailer from 'nodemailer';
 import * as smtpTransport from 'nodemailer-smtp-transport';
+import { contract, contract2, ConvertType } from './service-test';
 
 /**
  * Get nodemailer transporter for sending emails.
@@ -66,6 +67,49 @@ type ActivationValues = {
 
 type SendEmailValues = ActivationValues;
 
+const sendEmail = contract(
+  ['to', 'values'],
+  {
+    to: Joi.string()
+      .email()
+      .required(),
+    values: Joi.object()
+      .keys({
+        type: Joi.string().required(),
+        context: Joi.object().required(),
+      })
+      .required(),
+  },
+  /**
+   * Send email
+   * @param to the receiver of the email
+   * @param values the properties to add to templates
+   */
+  async (to, values) => {
+    const { type, context } = {} as any;
+    const subject = await _renderTemplate(`${type}/subject.ejs`, context);
+    const body = await _renderTemplate(`${type}/body.ejs`, context);
+    await _sendEmail(config.EMAIL_SENDER_ADDRESS, to, subject, body);
+  },
+);
+
+sendEmail();
+
+const schema = Joi.object().keys({
+  type: Joi.string(), // .required(),
+  context: Joi.object(), // .required(),
+});
+
+type B = ConvertType<typeof schema>;
+
+// sendEmail()
+
+sendEmail('mail@examplee.com', {
+  type: 'foo',
+  context: {
+    foo: 'a',
+  },
+});
 @service
 class NotificationService {
   /**
