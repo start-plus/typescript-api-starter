@@ -10,9 +10,12 @@ import { errorHandler, notFoundHandler } from 'express-api-error-handler';
 import * as config from 'config';
 import './bootstrap';
 import routes from './routes';
-import loadRoutes from './common/loadRoutes';
+// import loadRoutes from './common/loadRoutes';
 import logger from './common/logger';
+import { loadRoutes } from 'express-route-config';
 // import { BearerToken, User } from './models';
+
+// import * as routeConfig from 'express-route-config';
 
 const app = express();
 app.set('port', config.PORT);
@@ -36,7 +39,13 @@ app.use(domainMiddleware);
 
 const apiRouter = express.Router();
 
-loadRoutes(apiRouter, routes);
+loadRoutes({
+  authMiddleware: (req, res, next) => next(),
+  hasRole: () => false,
+  isLoggedIn: req => req.user != null,
+  router: apiRouter,
+  routes,
+});
 
 app.use('/api', apiRouter);
 

@@ -17,6 +17,9 @@ import { RouteConfig } from '../types';
 export default function loadRoutes(router: Router, routes: RouteConfig) {
   R.toPairs(routes).forEach(([url, verbs]) => {
     R.toPairs(verbs).forEach(([verb, def]) => {
+      if (def == null) {
+        return;
+      }
       const actions: RequestHandler[] = [
         // (req, res, next) => {
         //   if (!req.headers.authorization) {

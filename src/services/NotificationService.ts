@@ -1,4 +1,3 @@
-import { service, validate, schema } from 'ts-service';
 import * as Joi from 'joi';
 import * as config from 'config';
 import * as path from 'path';
@@ -6,7 +5,7 @@ import * as fs from 'mz/fs';
 import * as ejs from 'ejs';
 import * as nodemailer from 'nodemailer';
 import * as smtpTransport from 'nodemailer-smtp-transport';
-import { contract, contract2, ConvertType } from './service-test';
+import { contract } from '../lib/contract';
 
 /**
  * Get nodemailer transporter for sending emails.
@@ -65,9 +64,16 @@ type ActivationValues = {
   };
 };
 
-type SendEmailValues = ActivationValues;
+type ForgotEmailValues = {
+  type: 'forgot-email';
+  context: {
+    url: string;
+  };
+};
 
-const sendEmail = contract(
+type SendEmailValues = ActivationValues | ForgotEmailValues;
+
+export const sendEmail = contract(
   ['to', 'values'],
   {
     to: Joi.string()
@@ -85,62 +91,17 @@ const sendEmail = contract(
    * @param to the receiver of the email
    * @param values the properties to add to templates
    */
-  async (to, values) => {
-    const { type, context } = {} as any;
+  async (to, values: SendEmailValues) => {
+    const { type, context } = values;
     const subject = await _renderTemplate(`${type}/subject.ejs`, context);
     const body = await _renderTemplate(`${type}/body.ejs`, context);
     await _sendEmail(config.EMAIL_SENDER_ADDRESS, to, subject, body);
   },
 );
 
-sendEmail();
-
-const schema = Joi.object().keys({
-  type: Joi.string(), // .required(),
-  context: Joi.object(), // .required(),
-});
-
-type B = ConvertType<typeof schema>;
-
-// sendEmail()
-
-sendEmail('mail@examplee.com', {
-  type: 'foo',
+sendEmail('email', {
+  type: 'forgot-email',
   context: {
-    foo: 'a',
+    url: 'foo',
   },
 });
-@service
-class NotificationService {
-  /**
-   * Send email
-   * @param to the receiver of the email
-   * @param type the email type
-   * @param values the properties to add to templates
-   */
-  @validate
-  async sendEmail(
-    @schema(
-      Joi.string()
-        .email()
-        .required(),
-    )
-    to: string,
-    @schema(
-      Joi.object()
-        .keys({
-          type: Joi.string().required(),
-          context: Joi.object().required(),
-        })
-        .required(),
-    )
-    values: SendEmailValues,
-  ) {
-    const { type, context } = values;
-    const subject = await _renderTemplate(`${type}/subject.ejs`, context);
-    const body = await _renderTemplate(`${type}/body.ejs`, context);
-    await _sendEmail(config.EMAIL_SENDER_ADDRESS, to, subject, body);
-  }
-}
-
-export const notificationService = new NotificationService();
